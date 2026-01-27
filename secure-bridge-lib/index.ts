@@ -98,31 +98,31 @@ export class AES256GCM {
     };
   }
 
-//   /**
-//    * Decrypt data using AES-256-GCM
-//    * @param input - Decryption input containing ciphertext, IV, authTag, and key
-//    * @returns Decrypted plaintext
-//    * @throws Error if authentication fails or decryption fails
-//    */
-//   static decrypt(input: AESDecryptionInput): string {
-//     const { ciphertext, iv, authTag, key } = input;
+  /**
+   * Decrypt data using AES-256-GCM
+   * @param input - Decryption input containing ciphertext, IV, authTag, and key
+   * @returns Decrypted plaintext
+   * @throws Error if authentication fails or decryption fails
+   */
+  static decrypt(input: AESDecryptionInput): string {
+    const { ciphertext, iv, authTag, key } = input;
 
-//     // Convert from Base64
-//     const keyBuffer = Buffer.from(key, "base64");
-//     const ivBuffer = Buffer.from(iv, "base64");
-//     const authTagBuffer = Buffer.from(authTag, "base64");
+    // Convert from Base64
+    const keyBuffer = Buffer.from(key, "base64");
+    const ivBuffer = Buffer.from(iv, "base64");
+    const authTagBuffer = Buffer.from(authTag, "base64");
 
-//     // Create decipher
-//     const decipher = createDecipheriv(this.ALGORITHM, keyBuffer, ivBuffer);
-//     decipher.setAuthTag(authTagBuffer);
+    // Create decipher
+    const decipher = createDecipheriv(this.ALGORITHM, keyBuffer, ivBuffer);
+    decipher.setAuthTag(authTagBuffer);
 
-//     // Decrypt
-//     let plaintext = decipher.update(ciphertext, "base64", "utf8");
-//     plaintext += decipher.final("utf8");
+    // Decrypt
+    let plaintext = decipher.update(ciphertext, "base64", "utf8");
+    plaintext += decipher.final("utf8");
 
-//     return plaintext;
-//   }
-// }
+    return plaintext;
+  }
+}
 
 /**
  * RSA Key Pair Module (RSA-OAEP with SHA-256)
@@ -227,32 +227,32 @@ export class SecureBridge {
     };
   }
 
-  // /**
-  //  * Server-side: Decrypt a request payload
-  //  * @param encryptedPayload - Encrypted payload from client
-  //  * @param serverPrivateKey - Server's RSA private key in PEM format
-  //  * @returns Decrypted plaintext payload
-  //  */
-  // static decryptRequest(
-  //   encryptedPayload: EncryptedPayload,
-  //   serverPrivateKey: string,
-  // ): string {
-  //   // Step 1: Decrypt AES key using server's private key
-  //   const aesKey = RSAKeyPairManager.decryptWithPrivateKey(
-  //     encryptedPayload.encryptedAESKey,
-  //     serverPrivateKey,
-  //   );
+  /**
+   * Server-side: Decrypt a request payload
+   * @param encryptedPayload - Encrypted payload from client
+   * @param serverPrivateKey - Server's RSA private key in PEM format
+   * @returns Decrypted plaintext payload
+   */
+  static decryptRequest(
+    encryptedPayload: EncryptedPayload,
+    serverPrivateKey: string,
+  ): string {
+    // Step 1: Decrypt AES key using server's private key
+    const aesKey = RSAKeyPairManager.decryptWithPrivateKey(
+      encryptedPayload.encryptedAESKey,
+      serverPrivateKey,
+    );
 
-  //   // Step 2: Decrypt payload using AES-256-GCM
-  //   const plaintext = AES256GCM.decrypt({
-  //     ciphertext: encryptedPayload.ciphertext,
-  //     iv: encryptedPayload.iv,
-  //     authTag: encryptedPayload.authTag,
-  //     key: aesKey,
-  //   });
+    // Step 2: Decrypt payload using AES-256-GCM
+    const plaintext = AES256GCM.decrypt({
+      ciphertext: encryptedPayload.ciphertext,
+      iv: encryptedPayload.iv,
+      authTag: encryptedPayload.authTag,
+      key: aesKey,
+    });
 
-  //   return plaintext;
-  // }
+    return plaintext;
+  }
 }
 
 // Export all for convenience
