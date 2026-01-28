@@ -1,9 +1,23 @@
+.PHONY: dev install test clean docker-up docker-down docker-logs
+
 dev:
 	poetry run uvicorn app.main:app --reload
 
-# # Build and run with docker-compose
-# docker-compose up --build
+install:
+	poetry install
 
-# # Or build manually
-# docker build -t verification-service .
-# docker run -p 8000:8000 verification-service
+test:
+	poetry run pytest tests/ -v
+
+clean:
+	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete
+
+docker-up:
+	docker compose up -d --build
+
+docker-down:
+	docker compose down
+
+docker-logs:
+	docker compose logs -f verification-service

@@ -1,0 +1,4 @@
+# Do not commit private keys to version control
+*.pem
+*.key
+!.gitkeep

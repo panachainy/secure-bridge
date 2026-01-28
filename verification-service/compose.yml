@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16-alpine
+    platform: linux/arm64
+    container_name: verification-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-verification_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - secure-bridge
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  verification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: verification-service
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/verification_db
+      - PRIVATE_KEY_PATH=/app/keys/private_key.pem
+      - HMAC_SECRET_KEY=${HMAC_SECRET_KEY:-default-hmac-secret-change-in-production}
+      - STORAGE_ENCRYPTION_KEY=${STORAGE_ENCRYPTION_KEY:-default-storage-key-change-this!!}
+    volumes:
+      - ./keys:/app/keys
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - secure-bridge
+
+volumes:
+  postgres_data:
+
+networks:
+  secure-bridge:
+    driver: bridge

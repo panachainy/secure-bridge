@@ -7,21 +7,25 @@ WORKDIR /app
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    POETRY_VERSION=1.7.1 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    PATH="$POETRY_HOME/bin:$PATH"
 
-# Install system dependencies
+# Install system dependencies and Poetry
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     gcc \
+    curl \
+    && curl -sSL https://install.python-poetry.org | python3 - \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency files
-COPY pyproject.toml ./
+COPY pyproject.toml poetry.lock* ./
 
-# Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install fastapi==0.128.0 uvicorn[standard]==0.40.0
+# Install Python dependencies using Poetry
+RUN poetry install --no-dev --no-root
 
 # Copy application code
 COPY app/ ./app/
