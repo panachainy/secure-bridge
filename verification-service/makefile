@@ -1,4 +1,4 @@
-.PHONY: dev install test clean docker-up docker-down docker-logs
+.PHONY: dev install test clean docker-up docker-down docker-logs format
 
 dev:
 	poetry run uvicorn app.main:app --reload
@@ -21,3 +21,7 @@ docker-down:
 
 docker-logs:
 	docker compose logs -f verification-service
+
+format:
+	poetry run black .
+	poetry run isort .
